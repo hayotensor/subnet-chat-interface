@@ -315,9 +315,9 @@ function speechToText() {
   
   const textarea = $('.human-replica:last textarea');
   recognition.onresult = (event) => {
-    // currentStream.getTracks().forEach(track => track.stop()); 
-    // const audioModal = $('#audio-visualizer');
-    // audioModal.hide()  
+    currentStream.getTracks().forEach(track => track.stop()); 
+    const audioModal = $('#audio-visualizer');
+    audioModal.hide()  
     audioStartImg.classList.remove("animate-ping");
     const transcript = event.results[0][0].transcript;
     textarea.val(textarea.val() + " " + transcript)
