@@ -501,3 +501,36 @@ main p {
 .audio-box5{
   animation-name: quiet;
 }
+
+
+.gradient-border {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #0000;
+  background: linear-gradient(#131219, #131219) padding-box, linear-gradient(
+        var(--angle),
+        #ffffff00,
+        #79c314,
+        #487de7,
+        #4b369d,
+        #70369d,
+        #e81416,
+        #ffa500,
+        #faeb36
+      ) border-box;
+  animation: 4s rotate linear infinite;
+}
+
+@keyframes rotate {
+  to {
+    --angle: 360deg;
+  }
+}
+
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+

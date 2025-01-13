@@ -210,7 +210,7 @@ function receiveReplica(inputs) {
 
       $(".ai-replica:last").append(
         `<div>` +
-          `<button type="button" class="text-to-speech-button disabled:opacity-15 hover:bg-neutral-700 rounded-full p-1 text-center inline-flex items-center" value="${newText}" >` +
+          `<button type="button" class="text-to-speech-button transition disabled:opacity-15 hover:bg-neutral-700 rounded-full p-1 text-center inline-flex items-center" value="${newText}" >` +
             `<img class="w-4 h-4 invert" src="./static/speech.svg">` +
           `</button>` +
         `</div>`
@@ -304,6 +304,8 @@ function startAudioVisualizer() {
 function speechToText() {
   const audioStartButton = document.getElementById('audio-start');
   const audioStartImg = document.getElementById('audio-start-img');
+  const stopButton = document.getElementById('push-to-stop');
+  const audioModal = $('#audio-visualizer');
 
   const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition || window.msSpeechRecognition)();
   recognition.lang = 'en-US';
@@ -313,45 +315,46 @@ function speechToText() {
     audioStartImg.classList.add("animate-ping");
   };
   
-  const textarea = $('.human-replica:last textarea');
-  recognition.onresult = (event) => {
-    currentStream.getTracks().forEach(track => track.stop()); 
-    const audioModal = $('#audio-visualizer');
+  stopButton.addEventListener('click', () => {
+    console.log("Speech recognition aborted.");
+    recognition.abort();
+
+    if (currentStream != null) {
+      currentStream.getTracks().forEach(track => track.stop()); 
+    }
     audioModal.hide()  
     audioStartImg.classList.remove("animate-ping");
+    focusTextArea()
+  });  
+
+  recognition.onspeechend = () => {
+    recognition.stop();
+    console.log("Speech recognition has stopped 1.");
+    // remove visualizer
+    if (currentStream != null) {
+      currentStream.getTracks().forEach(track => track.stop()); 
+    }
+    audioModal.hide()  
+    audioStartImg.classList.remove("animate-ping");
+    console.log("Speech recognition has stopped.");
+    focusTextArea()
+  };
+  
+  const textarea = $('.human-replica:last textarea');
+  recognition.onresult = (event) => {
+    // remove button to talk
     const transcript = event.results[0][0].transcript;
-    textarea.val(textarea.val() + " " + transcript)
+    textarea.val(textarea.val() + " " + transcript);
+    if (currentStream != null) {
+      currentStream.getTracks().forEach(track => track.stop()); 
+    }
+    focusTextArea()
   };
     
   audioStartButton.addEventListener('click', () => {
     recognition.start();
   });  
 }
-
-document.getElementById('start-btn').addEventListener('click', () => {
-  
-  const audioModal = $('#audio-visualizer');
-  audioModal.show()
-
-  navigator.mediaDevices.getUserMedia({ audio: true })
-    .then(stream => {
-      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      const analyser = audioContext.createAnalyser();
-      const audioStream = audioContext.createMediaStreamSource(stream);
-      audioStream.connect(analyser);
-
-      visualize(analyser);
-
-      // Clear the timer if speech is detected again
-      analyser.onaudioprocess = function() {
-        console.log("onaudioprocess")
-        clearTimeout(stopTimer);
-      };      
-    })
-    .catch(err => {
-      console.error('Error accessing audio stream:', err);
-    });
-});
 
 function visualize(analyser) {
   const canvas = document.getElementById('visualizer');
@@ -369,9 +372,13 @@ function visualize(analyser) {
     let barHeight;
     let x = 0;
 
+    g = 255
+
     for (let i = 0; i < bufferLength; i++) {
+      // b = Math.random() * (255 - 0) + 0; // was 0
       barHeight = dataArray[i];
-      canvasContext.fillStyle = `rgb(${255-barHeight},255,0)`;
+      // canvasContext.fillStyle = `rgb(${255-barHeight},${g},${0})`;
+      canvasContext.fillStyle = `rgb(${barHeight},${g},0)`;
       canvasContext.fillRect(x, canvas.height - barHeight / 5, barWidth, barHeight / 5);
       x += barWidth + 1;
     }
@@ -400,6 +407,13 @@ function appendTextArea() {
   upgradeTextArea();
 }
 
+function focusTextArea() {
+  const textarea = $('.human-replica:last textarea');
+  autosize(textarea);
+  textarea[0].selectionStart = textarea[0].value.length;
+  textarea.focus();
+}
+
 function upgradeTextArea() {
   $("#ready").attr('class', 'ready');
 
@@ -422,13 +436,13 @@ function upgradeTextArea() {
   });
 
   const submitButton = $('#human-replica-submit');
-  textarea.on('input', function() {
-    if ($(this).val().length === 0) {
-      submitButton.hide()
-    } else {
-      submitButton.show()
-    }
-  });
+  // textarea.on('input', function() {
+  //   if ($(this).val().length === 0) {
+  //     submitButton.hide()
+  //   } else {
+  //     submitButton.show()
+  //   }
+  // });
 
   submitButton.on('click', e => {
     e.preventDefault();
