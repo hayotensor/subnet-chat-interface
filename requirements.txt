@@ -1,0 +1,6 @@
+# git+https://github.com/bigscience-workshop/petals
+git+https://github.com/hayotensor/subnet-llm-template
+Flask
+flask-sock
+flask-cors
+gunicorn[gthread]
