@@ -296,3 +296,208 @@ main p {
     transform: rotate(360deg);
   }
 }
+
+/* Firefox */
+/* * {
+  scrollbar-width: auto;
+  scrollbar-color: #3f3f46 #18181b;
+} */
+
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 16px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #18181b;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #3f3f46;
+  border: 0px solid #ffffff;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: #52525b;
+}
+
+*::-webkit-scrollbar-thumb:active {
+  background: #71717a;
+}
+
+*::-webkit-scrollbar-button {
+  background-color: #18181b;
+  height: 15px;
+  width: 15px;
+  font-size: 12px;
+  text-align: center;
+  line-height: 16px;
+}
+
+/* Buttons */
+::-webkit-scrollbar-button:single-button {
+  background-color: #18181b;
+  display: block;
+  background-size: 10px;
+  background-repeat: no-repeat;
+}
+
+/* Up */
+::-webkit-scrollbar-button:single-button:vertical:decrement {
+  height: 16px;
+  width: 16px;
+  background-position: center 4px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='rgb(96, 96, 96)'><polygon points='50,00 0,50 100,50'/></svg>");
+}
+
+::-webkit-scrollbar-button:single-button:vertical:decrement:hover {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='rgb(112, 112, 112)'><polygon points='50,00 0,50 100,50'/></svg>");
+}
+
+::-webkit-scrollbar-button:single-button:vertical:decrement:active {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='rgb(128, 128, 128)'><polygon points='50,00 0,50 100,50'/></svg>");
+}
+
+/* Down */
+::-webkit-scrollbar-button:single-button:vertical:increment {
+  height: 16px;
+  width: 16px;
+  background-position: center 4px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='rgb(96, 96, 96)'><polygon points='0,0 100,0 50,50'/></svg>");
+}
+
+::-webkit-scrollbar-button:single-button:vertical:increment:hover {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='rgb(112, 112, 112)'><polygon points='0,0 100,0 50,50'/></svg>");
+}
+
+::-webkit-scrollbar-button:single-button:vertical:increment:active {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='rgb(128, 128, 128)'><polygon points='0,0 100,0 50,50'/></svg>");
+}
+/* *::-webkit-scrollbar-button:increment:after {
+  content: '\25B2';
+  color: white;
+}
+
+*::-webkit-scrollbar-button:decrement:after {
+  content: '\25BC';
+} */
+
+/* *::-webkit-scrollbar-button {
+  background-color: #ddd;
+  border: 1px solid #ccc;
+  width: 15px;
+  height: 15px;
+} */
+
+/* body {
+  --sb-track-color: #18181b;
+  --sb-thumb-color: #3f3f46;
+  --sb-size: 16px;
+} */
+
+/* body::-webkit-scrollbar {
+  width: var(--sb-size);
+} */
+
+/* body::-webkit-scrollbar-track {
+  background: var(--sb-track-color);
+  border-radius: 2px;
+} */
+
+/* body::-webkit-scrollbar-thumb {
+  background: var(--sb-thumb-color);
+  border-radius: 2px;
+} */
+
+/* @supports not selector(::-webkit-scrollbar) {
+  body {
+      scrollbar-color: var(--sb-thumb-color)
+                     var(--sb-track-color);
+  }
+} */
+
+
+/* Audio  */
+
+@keyframes quiet {
+  25%{
+    transform: scaleY(.6);
+  }
+  50%{
+    transform: scaleY(.4);
+  }
+  75%{
+    transform: scaleY(.8);
+  }
+}
+
+@keyframes normal {
+  25%{
+    transform: scaleY(1);
+  }
+  50%{
+    transform: scaleY(.4);
+  }
+  75%{
+    transform: scaleY(.6);
+  }
+}
+@keyframes loud {
+  25%{
+    transform: scaleY(1);
+  }
+  50%{
+    transform: scaleY(.4);
+  }
+  75%{
+    transform: scaleY(1.2);
+  }
+}
+/* body{
+  display: flex;
+  justify-content: center;
+  background: black;
+  margin: 0;padding: 0;
+  align-items: center;
+  height: 100vh;
+} */
+
+.audio-box-container{
+  display: flex;
+  justify-content: space-between;
+  height: 64px;
+  --boxSize: 8px;
+  --gutter: 4px;
+  width: calc((var(--boxSize) + var(--gutter)) * 5);
+}
+
+.audio-box{
+  transform: scaleY(.4);
+  height: 100%;
+  width: var(--boxSize);
+  background: #12E2DC;
+  animation-duration: 1.2s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  border-radius: 8px;
+}
+
+.audio-box1{
+  animation-name: quiet;
+}
+
+.audio-box2{
+  animation-name: normal;
+}
+
+.audio-box3{
+  animation-name: quiet;
+}
+
+.audio-box4{
+  animation-name: loud;
+}
+
+.audio-box5{
+  animation-name: quiet;
+}

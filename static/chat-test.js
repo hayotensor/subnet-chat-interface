@@ -210,7 +210,7 @@ function receiveReplica(inputs) {
 
       $(".ai-replica:last").append(
         `<div>` +
-          `<button type="button" class="text-to-speech-button hover:bg-neutral-700 rounded-full p-1 text-center inline-flex items-center" value="${newText}" >` +
+          `<button type="button" class="text-to-speech-button disabled:opacity-15 hover:bg-neutral-700 rounded-full p-1 text-center inline-flex items-center" value="${newText}" >` +
             `<img class="w-4 h-4 invert" src="./static/speech.svg">` +
           `</button>` +
         `</div>`
@@ -262,6 +262,45 @@ function retry() {
   sendReplica();
 }
 
+function speak(text) {
+  return new Promise(resolve => {
+    const synth = window.speechSynthesis;
+    const utterance = new SpeechSynthesisUtterance(text);
+
+    utterance.onend = () => {
+      resolve(); // Resolve the promise when speech is done
+    };
+
+    synth.speak(utterance);
+  });
+}
+
+let currentStream = null;
+
+function startAudioVisualizer() {
+  const audioModal = $('#audio-visualizer');
+  audioModal.show()
+  navigator.mediaDevices.getUserMedia({ audio: true })
+  .then(stream => {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const analyser = audioContext.createAnalyser();
+    const audioStream = audioContext.createMediaStreamSource(stream);
+    audioStream.connect(analyser);
+    currentStream = stream
+
+    visualize(analyser);
+
+    // Clear the timer if speech is detected again
+    analyser.onaudioprocess = function() {
+      console.log("onaudioprocess")
+      clearTimeout(stopTimer);
+    };    
+  })
+  .catch(err => {
+    console.error('Error accessing audio stream:', err);
+  });
+}
+
 function speechToText() {
   const audioStartButton = document.getElementById('audio-start');
   const audioStartImg = document.getElementById('audio-start-img');
@@ -270,11 +309,15 @@ function speechToText() {
   recognition.lang = 'en-US';
   
   recognition.onstart = () => {
+    startAudioVisualizer()
     audioStartImg.classList.add("animate-ping");
   };
   
   const textarea = $('.human-replica:last textarea');
   recognition.onresult = (event) => {
+    // currentStream.getTracks().forEach(track => track.stop()); 
+    // const audioModal = $('#audio-visualizer');
+    // audioModal.hide()  
     audioStartImg.classList.remove("animate-ping");
     const transcript = event.results[0][0].transcript;
     textarea.val(textarea.val() + " " + transcript)
@@ -285,16 +328,56 @@ function speechToText() {
   });  
 }
 
-function speak(text) {
-  const synth = window.speechSynthesis;
-  const utterance = new SpeechSynthesisUtterance(text);
+document.getElementById('start-btn').addEventListener('click', () => {
+  
+  const audioModal = $('#audio-visualizer');
+  audioModal.show()
 
-  // Optional: Customize voice, pitch, rate
-  // utterance.voice = speechSynthesis.getVoices()[1]; 
-  // utterance.pitch = 1;
-  // utterance.rate = 1.2;
+  navigator.mediaDevices.getUserMedia({ audio: true })
+    .then(stream => {
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const analyser = audioContext.createAnalyser();
+      const audioStream = audioContext.createMediaStreamSource(stream);
+      audioStream.connect(analyser);
 
-  synth.speak(utterance);
+      visualize(analyser);
+
+      // Clear the timer if speech is detected again
+      analyser.onaudioprocess = function() {
+        console.log("onaudioprocess")
+        clearTimeout(stopTimer);
+      };      
+    })
+    .catch(err => {
+      console.error('Error accessing audio stream:', err);
+    });
+});
+
+function visualize(analyser) {
+  const canvas = document.getElementById('visualizer');
+  const canvasContext = canvas.getContext('2d');
+  analyser.fftSize = 256;
+  const bufferLength = analyser.frequencyBinCount;
+  const dataArray = new Uint8Array(bufferLength);
+
+  function draw() {
+    requestAnimationFrame(draw);
+    analyser.getByteFrequencyData(dataArray);
+    canvasContext.clearRect(0, 0, canvas.width, canvas.height);
+
+    const barWidth = (canvas.width / bufferLength) * 1.5;
+    let barHeight;
+    let x = 0;
+
+    for (let i = 0; i < bufferLength; i++) {
+      barHeight = dataArray[i];
+      canvasContext.fillStyle = `rgb(${255-barHeight},255,0)`;
+      canvasContext.fillRect(x, canvas.height - barHeight / 5, barWidth, barHeight / 5);
+      x += barWidth + 1;
+    }
+  }
+
+  draw();
 }
 
 function appendTextArea() {
@@ -362,28 +445,48 @@ function upgradeTextArea() {
   speechToText();
 }
 
+function enableAllSpeech() {
+  const elements = document.getElementsByClassName('text-to-speech-button');
+  Array.from(elements).forEach(function(element) {
+    // element.classList.remove("disabled")
+    element.disabled = false;
+  });
+}
+
+function disableAllSpeech() {
+  const elements = document.getElementsByClassName('text-to-speech-button');
+  Array.from(elements).forEach(function(element) {
+    // element.classList.add("disabled")
+    element.disabled = true;
+  });
+}
+
 const animFrames = ["⌛", "🧠"];
 var curFrame = 0;
 
 $(() => {
   upgradeTextArea();
   
-  document.addEventListener('click', function(event) {
+  document.addEventListener('click', async function(event) {
     if (event.target.classList.contains('text-to-speech-button')) {
       const parentElement = event.target.parentElement.value;
       console.log("text-to-speech-button parentElement", parentElement)
 
-      console.log("text-to-speech-button hit")
-      speak(event.target.value)
+      disableAllSpeech()
+      await speak(event.target.value)
+      console.log("speak(event.target.value) done")
+      enableAllSpeech()
     }
   });
     
-  document.addEventListener('click', function(event) {
+  document.addEventListener('click', async function(event) {
     const button = event.target.closest('.text-to-speech-button');
     if (button) {
       console.log("text-to-speech-button hit");
-      console.log("Button value:", button.value);
-      speak(button.value);
+      disableAllSpeech()
+      await speak(button.value);
+      console.log("speak(button.value) done")
+      enableAllSpeech()
     }
   });
   
