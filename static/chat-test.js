@@ -202,10 +202,11 @@ function receiveReplica(inputs) {
         resetSession();
         forceStop = false;
       }
+
+      renderOutput(newText)
+
       $('.loading-animation, .loader, .speed, .suggest-join, .generation-controls').remove();
-      console.log("newText first", newText)
       newText = newText.replace("Assistant: ", "");
-      console.log("newText after", newText)
       newText = newText.replace(/"/g, "'");
 
       $(".ai-replica:last").append(
@@ -263,10 +264,15 @@ function retry() {
 }
 
 function speak(text) {
-  return new Promise(resolve => {
-    const synth = window.speechSynthesis;
-    const utterance = new SpeechSynthesisUtterance(text);
 
+  const utterance = new SpeechSynthesisUtterance(text);
+
+  const synth = window.speechSynthesis;
+
+  // 2 is nice
+  utterance.voice = synth.getVoices()[13];
+
+  return new Promise(resolve => {
     utterance.onend = () => {
       resolve(); // Resolve the promise when speech is done
     };
@@ -292,7 +298,6 @@ function startAudioVisualizer() {
 
     // Clear the timer if speech is detected again
     analyser.onaudioprocess = function() {
-      console.log("onaudioprocess")
       clearTimeout(stopTimer);
     };    
   })
@@ -316,7 +321,6 @@ function speechToText() {
   };
   
   stopButton.addEventListener('click', () => {
-    console.log("Speech recognition aborted.");
     recognition.abort();
 
     if (currentStream != null) {
@@ -329,14 +333,12 @@ function speechToText() {
 
   recognition.onspeechend = () => {
     recognition.stop();
-    console.log("Speech recognition has stopped 1.");
     // remove visualizer
     if (currentStream != null) {
       currentStream.getTracks().forEach(track => track.stop()); 
     }
     audioModal.hide()  
     audioStartImg.classList.remove("animate-ping");
-    console.log("Speech recognition has stopped.");
     focusTextArea()
   };
   
@@ -387,6 +389,23 @@ function visualize(analyser) {
   draw();
 }
 
+function renderOutput(responseText) {
+  const elements = document.querySelectorAll('.ai-replica');
+  const outputDiv = elements[elements.length - 1];
+
+  const codeBlockRegex = /```([a-zA-Z0-9]*)\n([\s\S]*?)```/g;
+
+  if (codeBlockRegex.test(responseText)) {
+    let formattedResponse = responseText.replace(codeBlockRegex, function(match, lang, code) {
+      return `<pre><code class="hljs ${lang}">${(code)}</code></pre>`;
+    });
+    outputDiv.innerHTML = formattedResponse;
+    hljs.highlightAll(); // Highlight the code after rendering
+  } else {
+    outputDiv.textContent = responseText;
+  }
+}
+
 function appendTextArea() {
   $('body, html').animate({ scrollTop: $(".ai-replica:last").offset().top }, 1000);
   $('.chat-section').empty();
@@ -416,9 +435,6 @@ function focusTextArea() {
 
 function upgradeTextArea() {
   $("#ready").attr('class', 'ready');
-
-  const classNames = $("#ready").attr("class");
-
   const textarea = $('.human-replica:last textarea');
   autosize(textarea);
   textarea[0].selectionStart = textarea[0].value.length;
@@ -436,14 +452,6 @@ function upgradeTextArea() {
   });
 
   const submitButton = $('#human-replica-submit');
-  // textarea.on('input', function() {
-  //   if ($(this).val().length === 0) {
-  //     submitButton.hide()
-  //   } else {
-  //     submitButton.show()
-  //   }
-  // });
-
   submitButton.on('click', e => {
     e.preventDefault();
     // don't submit unless there is an input value
@@ -462,7 +470,6 @@ function upgradeTextArea() {
 function enableAllSpeech() {
   const elements = document.getElementsByClassName('text-to-speech-button');
   Array.from(elements).forEach(function(element) {
-    // element.classList.remove("disabled")
     element.disabled = false;
   });
 }
@@ -470,7 +477,6 @@ function enableAllSpeech() {
 function disableAllSpeech() {
   const elements = document.getElementsByClassName('text-to-speech-button');
   Array.from(elements).forEach(function(element) {
-    // element.classList.add("disabled")
     element.disabled = true;
   });
 }
@@ -480,26 +486,37 @@ var curFrame = 0;
 
 $(() => {
   upgradeTextArea();
-  
-  document.addEventListener('click', async function(event) {
-    if (event.target.classList.contains('text-to-speech-button')) {
-      const parentElement = event.target.parentElement.value;
-      console.log("text-to-speech-button parentElement", parentElement)
 
-      disableAllSpeech()
-      await speak(event.target.value)
-      console.log("speak(event.target.value) done")
-      enableAllSpeech()
-    }
-  });
-    
+  // KEEP THIS
+  // const audioButton = document.getElementById('audioButton');
+  // audioButton.addEventListener('click', async function() {
+  //   if (audioButton.classList.contains('active')) {
+  //     synth.cancel()
+  //     audioButton.classList.toggle('active');
+  //     enableAllSpeech()
+  //   } else {
+  //     audioButton.classList.toggle('active');
+  //     disableAllSpeech()
+  //     const textValue = this.value
+  //     await speak(textValue);
+  //     audioButton.classList.toggle('active');
+  //     enableAllSpeech()
+  //   }
+  // });
+
   document.addEventListener('click', async function(event) {
     const button = event.target.closest('.text-to-speech-button');
+    // const target = event.target;
+    // const id = target.id;
+    // if (id == "speech-button") {
+
+    // }
+
     if (button) {
-      console.log("text-to-speech-button hit");
+      // const parent = event.target.parentElement;
       disableAllSpeech()
       await speak(button.value);
-      console.log("speak(button.value) done")
+      event.preventDefault();
       enableAllSpeech()
     }
   });

@@ -533,4 +533,45 @@ main p {
   initial-value: 0deg;
   inherits: false;
 }
+.audio-btn {
+  /* background-color: #f0f0f0; */
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: background-color 0.3s ease;
+}
 
+/* .audio-btn:hover {
+  background-color: #ddd;
+} */
+
+/* Icon styling */
+.audio-icon {
+  position: absolute;
+  transition: opacity 0.3s ease;
+}
+
+#playIcon {
+  opacity: 1;
+}
+
+#stopIcon {
+  opacity: 0;
+}
+
+/* When button is toggled, show the stop icon */
+.audio-btn.active #playIcon {
+  opacity: 0;
+}
+
+.audio-btn.active #stopIcon {
+  display: block;
+  opacity: 1;
+}
