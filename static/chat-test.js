@@ -8,6 +8,7 @@ function getConfig() {
 
 var ws = null;
 var position = 0;
+var testPosition = 0;
 const initialSessionLength = 512;
 var sessionLength = initialSessionLength;
 var connFailureBefore = false;
@@ -66,18 +67,18 @@ function sendReplica() {
     $("#audio-start").prop("disabled", true);
 
     $('.dialogue').append($(
-      '<div class="ai-replica flex flex-col gap-2 scroll-smooth scroll-auto">' +
+      '<p class="ai-replica flex flex-col gap-2 scroll-smooth scroll-auto">' +
         `<span><img src="./static/logo.svg" width="16" height="16" class="invert"></span>` +
-        `<span class="text whitespace-pre-line">${aiPrompt}</span>` +
+        `<span class="text ai-text whitespace-pre-line">${aiPrompt}</span>` +
         '<span class="loader"></span>' +
         '<span class="speed" style="display: none;"></span>' +
         '<span class="generation-controls"><a class="stop-generation" href=#>stop generation</a></span>' +
         '<span class="suggest-join" style="display: none;">' +
           '<b>Too slow?</b> ' +
-          '<a target="_blank" href="https://github.com/bigscience-workshop/petals#connect-your-gpu-and-increase-petals-capacity">Connect your GPU</a> ' +
+          '<a target="_blank" href="https://github.com/hypertensor-blockchain/subnet-llm-template">Connect your GPU</a> ' +
           'and increase the Subnets capacity!' +
         '</span>' +
-      '</div>'));
+      '</p>'));
 
     $('body, html').animate({ scrollTop: $(".ai-replica:last").offset().top }, 1000);
 
@@ -93,13 +94,57 @@ function sendReplica() {
     openSession();
     return;
   }
+  // console.log("ai-human text 1:", $('.ai-human:last').text())
+
+  // let testPrependPhrase = "give me a short response to the following: ";
+
+  // const aiText = $('.ai-text:last');
+  // console.log("test text aiText", aiText.text())
+  // console.log("test val aiText", aiText.val())
+
+  // const testDivs = $('.ai-human, .ai-text');
+  // var testReplicas = [];
+
+  // for (var i = testPosition; i < testDivs.length; i++) {
+  //   const el = $(testDivs[i]);
+  //   let phrase = el.text();
+  //   console.log("test phrase", phrase)
+
+  //   if (llama3Models.includes(curModel)) {
+  //     if (i < 2) {
+  //       // Skip the system prompt and the 1st assistant's message to match the HF demo format precisely
+  //       continue;
+  //     }
+  //     phrase = phrase.replace(/^Human:/, `<|start_header_id|>user<|end_header_id|>: ${testPrependPhrase}`);
+  //     phrase = phrase.replace(/^Assistant:/, '<|start_header_id|>assistant<|end_header_id|>:');
+  //   }
+
+  //   if (el.is(".ai-human")) {
+  //     phrase += getConfig().chat.sep_token;
+  //   } else if (i < testDivs.length - 1) {
+  //     phrase += getConfig().chat.stop_token;
+  //   }
+  //   testReplicas.push(phrase);
+  // }
+
+  // const testInputs = testReplicas.join("");
+  // console.log("testInputs", testInputs)
+
+  // testPosition = testDivs.length;
+
 
   let prependPhrase = "give me a short response to the following: ";
   const replicaDivs = $('.ai-human, .ai-replica .text');
+  console.log("replicaDivs.len:", replicaDivs.length)
+
   var replicas = [];
   for (var i = position; i < replicaDivs.length; i++) {
     const el = $(replicaDivs[i]);
     let phrase = el.text();
+    console.log("phrase", phrase)
+
+    // let phrase2 = el.val();
+    // console.log("phrase2", phrase2)
 
     if (curModel === falconModel) {
       if (i < 2) {
@@ -126,12 +171,17 @@ function sendReplica() {
     }
     replicas.push(phrase);
   }
+
   const inputs = replicas.join("");
+  console.log("inputs", inputs)
+
   position = replicaDivs.length;
+  console.log("position", position)
 
   totalElapsed = 0;
   tokenCount = 0;
   receiveReplica(inputs);
+
 }
 
 function receiveReplica(inputs) {
@@ -210,11 +260,11 @@ function receiveReplica(inputs) {
       newText = newText.replace(/"/g, "'");
 
       $(".ai-replica:last").append(
-        `<div>` +
+        `<span class="flex flex-row gap-3">` +
           `<button type="button" class="text-to-speech-button transition disabled:opacity-15 hover:bg-neutral-700 rounded-full p-1 text-center inline-flex items-center" value="${newText}" >` +
             `<img class="w-4 h-4 invert" src="./static/speech.svg">` +
           `</button>` +
-        `</div>`
+        `</span>`
       );    
       appendTextArea();
     }
@@ -244,7 +294,6 @@ function handleFailure(message, autoRetry = false) {
     if (autoRetry) {
       retry();
     } else {
-      // $('.loading-animation').hide();
       $('.loader').hide();
       if (/attention cache is full/.test(message)) {
         $('.error-message').hide();
@@ -390,19 +439,65 @@ function visualize(analyser) {
 }
 
 function renderOutput(responseText) {
-  const elements = document.querySelectorAll('.ai-replica');
+  const elements = document.querySelectorAll('.ai-replica .text');
   const outputDiv = elements[elements.length - 1];
 
   const codeBlockRegex = /```([a-zA-Z0-9]*)\n([\s\S]*?)```/g;
+  const inlineCodeRegex = /`([^`]+)`/g;
+
+  // if (codeBlockRegex.test(responseText)) {
+  //   let formattedResponse = responseText.replace(codeBlockRegex, function(match, lang, code) {
+  //     return `<pre><code class="hljs ${lang}">${(code)}</code></pre>`;
+  //   });
+  //   outputDiv.innerHTML = formattedResponse;
+  //   hljs.highlightAll(); // Highlight the code after rendering
+  // } else {
+  //   outputDiv.textContent = responseText;
+  // }
+
+
+  // if (inlineCodeRegex.test(responseText)) {
+  //   console.log("renderOutput inlineCodeRegex if ")
+  //   let formattedResponse = responseText.replace(inlineCodeRegex, function(match, code) {
+  //     formatted = true;
+  //     return `<code>${(code)}</code>`;
+  //   });
+  //   outputDiv.innerHTML = formattedResponse;
+  //   hljs.highlightAll(); // Highlight the code after rendering
+  // } else {
+  //   console.log("renderOutput inlineCodeRegex else ")
+  //   outputDiv.textContent = responseText;
+  // }
+
+  let formattedResponse = responseText;
 
   if (codeBlockRegex.test(responseText)) {
-    let formattedResponse = responseText.replace(codeBlockRegex, function(match, lang, code) {
+    formattedResponse = formattedResponse.replace(codeBlockRegex, function(match, lang, code) {
       return `<pre><code class="hljs ${lang}">${(code)}</code></pre>`;
     });
     outputDiv.innerHTML = formattedResponse;
     hljs.highlightAll(); // Highlight the code after rendering
-  } else {
-    outputDiv.textContent = responseText;
+  // } else {
+  //   outputDiv.textContent = responseText;
+  }
+
+
+  if (inlineCodeRegex.test(responseText)) {
+    console.log("renderOutput inlineCodeRegex if ")
+    formattedResponse = formattedResponse.replace(inlineCodeRegex, function(match, code) {
+      formatted = true;
+      return `<code>${(code)}</code>`;
+    });
+    outputDiv.innerHTML = formattedResponse;
+    hljs.highlightAll(); // Highlight the code after rendering
+  // } else {
+  //   console.log("renderOutput inlineCodeRegex else ")
+  //   outputDiv.textContent = responseText;
+  }
+
+  if (formatted) {
+    outputDiv.innerHTML = formattedResponse;
+    hljs.highlightAll(); // Highlight the code after rendering
   }
 }
 
@@ -486,6 +581,7 @@ var curFrame = 0;
 
 $(() => {
   upgradeTextArea();
+  const seenDeaiMessage = localStorage.getItem("deai-message");
 
   // KEEP THIS
   // const audioButton = document.getElementById('audioButton');
@@ -506,12 +602,6 @@ $(() => {
 
   document.addEventListener('click', async function(event) {
     const button = event.target.closest('.text-to-speech-button');
-    // const target = event.target;
-    // const id = target.id;
-    // if (id == "speech-button") {
-
-    // }
-
     if (button) {
       // const parent = event.target.parentElement;
       disableAllSpeech()
@@ -521,8 +611,6 @@ $(() => {
     }
   });
   
-  const seenDeaiMessage = localStorage.getItem("deai-message");
-
   if (JSON.parse(seenDeaiMessage) != true) {
     $('#modal-deai-message').show();
   }

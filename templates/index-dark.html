@@ -61,25 +61,13 @@
             <!-- <p class="ai-human">A chat between a curious human and an artificial intelligence assistant. The assistant gives helpful responses, provides concise answers, and brief explanations in the fewest words possible to the user's questions.</p> -->
             <p class="ai-human">A chat between a curious human and an artificial intelligence assistant. The assistant gives helpful and short summaries to the user's questions.</p>
             <!-- <p class="ai-replica flex flex-col gap-2"><span class="w-6 h-6 rounded-full shadow-[0_0_6px_0px_rgba(255,255,255,.4)] flex justify-center"><img src="./static/logo.svg" width="16" height="16" class="invert"></span><span class="text">Assistant: Hi! How can I help you?</span></p> -->
-            <div class="ai-replica flex flex-col gap-2">
-              <span>
-                <img src="./static/logo.svg" width="16" height="16" class="invert"></img>
-              </span>
-              <span class="text">Assistant: Hi! How can I help you?</span>
-              <div class="flex flex-row gap-3">
+            <p class="ai-replica flex flex-col gap-2"><span><img src="./static/logo.svg" width="16" height="16" class="invert"></span><span class="text ai-text">Assistant: Hi! How can I help you?</span>
+              <span class="flex flex-row gap-3">
                 <button type="button" id="speech-button" class="text-to-speech-button transition disabled:opacity-15 hover:bg-neutral-700 rounded-full p-1 text-center inline-flex items-center" value="Hi! How can I help you?">
-                  <img class="w-4 h-4 invert" src="./static/speech.svg"></img>
+                  <img class="w-4 h-4 invert" src="./static/speech.svg">
                 </button>
-                <!-- <button id="audioButton" class="audio-btn hover:bg-neutral-700" value="Hi! How can I help you?">
-                  <span id="playIcon" class="audio-icon">
-                    <img class="w-4 h-4 invert" src="./static/speech.svg"></img>
-                  </span>
-                  <span id="stopIcon" class="audio-icon hidden">
-                    <img class="w-4 h-4 invert" src="./static/audio-silent.svg"></img>
-                  </span>
-                </button> -->
-              </div>
-            </div>
+              </span>
+            </p>
           </div>      
         </div>
       </div>
@@ -303,3 +291,12 @@
     <script src="./static/chat-test.js?v=18"></script>
   </body>
 </html>
+
+<!-- <button id="audioButton" class="audio-btn hover:bg-neutral-700" value="Hi! How can I help you?">
+  <span id="playIcon" class="audio-icon">
+    <img class="w-4 h-4 invert" src="./static/speech.svg"></img>
+  </span>
+  <span id="stopIcon" class="audio-icon hidden">
+    <img class="w-4 h-4 invert" src="./static/audio-silent.svg"></img>
+  </span>
+</button> -->
