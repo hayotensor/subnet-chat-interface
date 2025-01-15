@@ -94,57 +94,14 @@ function sendReplica() {
     openSession();
     return;
   }
-  // console.log("ai-human text 1:", $('.ai-human:last').text())
-
-  // let testPrependPhrase = "give me a short response to the following: ";
-
-  // const aiText = $('.ai-text:last');
-  // console.log("test text aiText", aiText.text())
-  // console.log("test val aiText", aiText.val())
-
-  // const testDivs = $('.ai-human, .ai-text');
-  // var testReplicas = [];
-
-  // for (var i = testPosition; i < testDivs.length; i++) {
-  //   const el = $(testDivs[i]);
-  //   let phrase = el.text();
-  //   console.log("test phrase", phrase)
-
-  //   if (llama3Models.includes(curModel)) {
-  //     if (i < 2) {
-  //       // Skip the system prompt and the 1st assistant's message to match the HF demo format precisely
-  //       continue;
-  //     }
-  //     phrase = phrase.replace(/^Human:/, `<|start_header_id|>user<|end_header_id|>: ${testPrependPhrase}`);
-  //     phrase = phrase.replace(/^Assistant:/, '<|start_header_id|>assistant<|end_header_id|>:');
-  //   }
-
-  //   if (el.is(".ai-human")) {
-  //     phrase += getConfig().chat.sep_token;
-  //   } else if (i < testDivs.length - 1) {
-  //     phrase += getConfig().chat.stop_token;
-  //   }
-  //   testReplicas.push(phrase);
-  // }
-
-  // const testInputs = testReplicas.join("");
-  // console.log("testInputs", testInputs)
-
-  // testPosition = testDivs.length;
-
 
   let prependPhrase = "give me a short response to the following: ";
   const replicaDivs = $('.ai-human, .ai-replica .text');
-  console.log("replicaDivs.len:", replicaDivs.length)
 
   var replicas = [];
   for (var i = position; i < replicaDivs.length; i++) {
     const el = $(replicaDivs[i]);
     let phrase = el.text();
-    console.log("phrase", phrase)
-
-    // let phrase2 = el.val();
-    // console.log("phrase2", phrase2)
 
     if (curModel === falconModel) {
       if (i < 2) {
@@ -173,10 +130,8 @@ function sendReplica() {
   }
 
   const inputs = replicas.join("");
-  console.log("inputs", inputs)
 
   position = replicaDivs.length;
-  console.log("position", position)
 
   totalElapsed = 0;
   tokenCount = 0;
@@ -445,30 +400,6 @@ function renderOutput(responseText) {
   const codeBlockRegex = /```([a-zA-Z0-9]*)\n([\s\S]*?)```/g;
   const inlineCodeRegex = /`([^`]+)`/g;
 
-  // if (codeBlockRegex.test(responseText)) {
-  //   let formattedResponse = responseText.replace(codeBlockRegex, function(match, lang, code) {
-  //     return `<pre><code class="hljs ${lang}">${(code)}</code></pre>`;
-  //   });
-  //   outputDiv.innerHTML = formattedResponse;
-  //   hljs.highlightAll(); // Highlight the code after rendering
-  // } else {
-  //   outputDiv.textContent = responseText;
-  // }
-
-
-  // if (inlineCodeRegex.test(responseText)) {
-  //   console.log("renderOutput inlineCodeRegex if ")
-  //   let formattedResponse = responseText.replace(inlineCodeRegex, function(match, code) {
-  //     formatted = true;
-  //     return `<code>${(code)}</code>`;
-  //   });
-  //   outputDiv.innerHTML = formattedResponse;
-  //   hljs.highlightAll(); // Highlight the code after rendering
-  // } else {
-  //   console.log("renderOutput inlineCodeRegex else ")
-  //   outputDiv.textContent = responseText;
-  // }
-
   let formattedResponse = responseText;
 
   if (codeBlockRegex.test(responseText)) {
@@ -477,22 +408,16 @@ function renderOutput(responseText) {
     });
     outputDiv.innerHTML = formattedResponse;
     hljs.highlightAll(); // Highlight the code after rendering
-  // } else {
-  //   outputDiv.textContent = responseText;
   }
 
 
   if (inlineCodeRegex.test(responseText)) {
-    console.log("renderOutput inlineCodeRegex if ")
     formattedResponse = formattedResponse.replace(inlineCodeRegex, function(match, code) {
       formatted = true;
       return `<code>${(code)}</code>`;
     });
     outputDiv.innerHTML = formattedResponse;
     hljs.highlightAll(); // Highlight the code after rendering
-  // } else {
-  //   console.log("renderOutput inlineCodeRegex else ")
-  //   outputDiv.textContent = responseText;
   }
 
   if (formatted) {
