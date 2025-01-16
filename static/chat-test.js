@@ -401,9 +401,11 @@ function renderOutput(responseText) {
   const inlineCodeRegex = /`([^`]+)`/g;
 
   let formattedResponse = responseText;
+  formatted = false;
 
   if (codeBlockRegex.test(responseText)) {
     formattedResponse = formattedResponse.replace(codeBlockRegex, function(match, lang, code) {
+      formatted = true;
       return `<pre><code class="hljs ${lang}">${(code)}</code></pre>`;
     });
     outputDiv.innerHTML = formattedResponse;
