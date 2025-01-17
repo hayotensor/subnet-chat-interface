@@ -174,9 +174,9 @@ main p {
   margin-right: .8rem;
 } */
 
-.chat-section {
+/* .chat-section {
   background-color: rgb(23 23 23 / 1.0);
-}
+} */
 
 .speed, .generation-controls, .suggest-join {
   display: block;
