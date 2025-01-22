@@ -139,7 +139,6 @@ function sendReplica() {
     
     if (llama3Models.includes(curModel)) {
       if (i == 0) {
-        console.log("added tuning")
         replicas.push(tuning());
       }
     }
