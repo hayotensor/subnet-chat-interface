@@ -1,3 +1,28 @@
+// import { tuning } from "./hypertensor-tuning.js";
+// console.log(tuning())
+function tuning() {
+  return `
+<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+A chat between a curious human and an artificial intelligence assistant. The assistant gives helpful and short summaries to the user's questions.
+
+Here are some helpful tips about Hypertensor
+Hypertensor is a decentralized & incentivized AI platform for decentralized AI applications and AI agents, known as subnets.
+
+The Hypertensor blockchain uses a NPoS (nominated proof of stake) consensus mechanism where blockchain validators control the incentives and consensus of the subnets in the network. 
+
+Subnets are incentivized intelligence & decentralized AI application with full-stack customizability.
+Subnets are built by developers, similar to protocols on smart contracts platforms like Ethereum or Solana.
+Hypertensor develops cutting-edge decentralized AI frameworks known as Subnet Standards. Developers can customize or deploy subnets using our pre-defined standards—such as the DSN (Decentralized Subnet) standard, which enables fully decentralized large language models through proof-of-stake and an innovative consensus mechanism called proof-of-inference.
+Hypertensor is an incentivized intelligence platform for decentralized artificial intelligence applications. Each application operates within its own dedicated subnet, where specialized nodes collaborate to validate the application’s tasks, data, and the integrity of the subnet itself. This architecture ensures robust decentralization, seamless scalability, and a trustless environment for AI innovation.
+Each Hypertensor subnet must have peer IDs and adhere to the Subnet Consensus Protocol (SCP) powered and validated by blockchain validators.
+
+Subnets use PoS (proof of stake) and PoI (proof of inference) and are decentralized and distributed AI models validated by thousands of nodes.
+
+The DSN (Decentralized Subnet) standard is for deploying decentralized AI models within the Hypertensor economy with other subnet validator nodes. The DSN has a PoS (Proof of Stake) consensus mechanism to enter the DHT (Distributed Hash Table) of the subnet's peer-to-peer network. This can be used to deploy decentralized AI models or AI agents in a fault-tolerant decentralized environment that follows the Hypertensor SCP (Subnet Consensus Protocol).
+<|eot_id|>
+`
+}
+
 var curModel = defaultModel;
 const falconModel = "tiiuae/falcon-180B-chat";
 const llama3Models = ["Orenguteng/Llama-3.1-8B-Lexi-Uncensored-V2"];
@@ -9,7 +34,7 @@ function getConfig() {
 var ws = null;
 var position = 0;
 var testPosition = 0;
-const initialSessionLength = 512;
+const initialSessionLength = 1024;
 var sessionLength = initialSessionLength;
 var connFailureBefore = false;
 
@@ -113,6 +138,13 @@ function sendReplica() {
     }
     
     if (llama3Models.includes(curModel)) {
+      if (i == 0) {
+        console.log("added tuning")
+        replicas.push(tuning());
+      }
+    }
+
+    if (llama3Models.includes(curModel)) {
       if (i < 2) {
         // Skip the system prompt and the 1st assistant's message to match the HF demo format precisely
         continue;
@@ -126,6 +158,7 @@ function sendReplica() {
     } else if (i < replicaDivs.length - 1) {
       phrase += getConfig().chat.stop_token;
     }
+
     replicas.push(phrase);
   }
 
@@ -136,7 +169,6 @@ function sendReplica() {
   totalElapsed = 0;
   tokenCount = 0;
   receiveReplica(inputs);
-
 }
 
 function receiveReplica(inputs) {
