@@ -1,6 +1,6 @@
-// import { tuning } from "./hypertensor-tuning.js";
-// console.log(tuning())
-function tuning() {
+// import { hypertensorTuning } from "./hypertensor-hypertensorTuning.js";
+// console.log(hypertensorTuning())
+function hypertensorTuning() {
   return `
 <|begin_of_text|><|start_header_id|>system<|end_header_id|>
 A chat between a curious human and an artificial intelligence assistant. The assistant gives helpful and short summaries to the user's questions.
@@ -30,6 +30,8 @@ const llama3Models = ["Orenguteng/Llama-3.1-8B-Lexi-Uncensored-V2"];
 function getConfig() {
   return modelConfigs[curModel];
 }
+
+var hypertensorTuningAdded = false;
 
 var ws = null;
 var position = 0;
@@ -138,8 +140,12 @@ function sendReplica() {
     }
     
     if (llama3Models.includes(curModel)) {
-      if (i == 0) {
-        replicas.push(tuning());
+      if (hypertensorTuningAdded == false) {
+        if (phrase.includes("hypertensor")) {
+          console.log("included")
+          replicas.push(hypertensorTuning());
+          hypertensorTuningAdded = true;
+        }
       }
     }
 
