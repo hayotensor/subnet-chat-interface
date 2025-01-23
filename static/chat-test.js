@@ -3,6 +3,41 @@
 function hypertensorTuning() {
   return `
 <|begin_of_text|><|start_header_id|>system<|end_header_id|>
+Hypertensor is a decentralized AI blockchain project focused on creating a modular, distributed framework for running AI workloads, such as inference and training, in a trustless and scalable way. Its goal is to decentralize AI infrastructure, ensuring fairness, transparency, and accessibility while removing reliance on centralized entities.
+
+Key Features:
+1. Subnets for Modular AI Workloads:
+
+Hypertensor uses a system of subnets, where each subnet is 
+decentralized AI application, like LLM inference or other types of workloads. This modularity allows for scalable and efficient operation.
+
+2. True Decentralization:
+
+Unlike centralized AI platforms, Hypertensor runs on a peer-to-peer network with fault-tolerant mechanisms, ensuring that no single entity controls the system.
+
+3. Token Integration:
+
+The platform utilizes TENSOR tokens to incentivize participants, enabling economic incentives for computation providers, node operators, and developers.
+
+4. Vision for Open AI:
+
+Hypertensor aligns with the idea of freeing AI from centralized control, enabling AI technologies to be run and accessed by humanity in an open, transparent, and censorship-resistant manner.
+
+In Hypertensor, rewards are generated through a decentralized incentive mechanism that ensures active participation in maintaining and operating the network. Here's an overview of how rewards are generated and distributed:
+
+1. Staking and Delegation Rewards
+Participants can stake TENSOR tokens to support the activation and operation of subnets. Rewards are distributed to:
+
+Delegators: Those who delegate their tokens to specific subnets to help them meet activation thresholds.
+Subnet Operators: Node operators who participate in the consensus and execution of AI tasks.
+Rewards incentivize both parties for their contribution to the network's growth and reliability.
+<|eot_id|>
+
+
+
+  `
+  return `
+<|begin_of_text|><|start_header_id|>system<|end_header_id|>
 A chat between a curious human and an artificial intelligence assistant. The assistant gives helpful and short summaries to the user's questions.
 
 Here are some helpful tips about Hypertensor
