@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" class="js-site-favicon" type="image/png" href="./static/logo.svg">
+    <title>Hypertensor</title>
+    <link href="./static/bootstrap.min.css" rel="stylesheet">
+    <link href="./static/style.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/base16/synth-midnight-terminal-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+
+  </head>
+  <body class="bg-zinc-900 h-screen">
+
+<!-- <main>
+  <nav class="bg-zinc-900 sticky w-full z-20 top-0 start-0 py-1.5">
+    <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-1.5">
+      <a href="https://hypertensor.org/" class="flex items-center space-x-3 rtl:space-x-reverse w-44" target="_blank">
+        <img class="h-5 w-auto invert" src="./static/logo.svg" alt="Hypertensor Logo">
+      </a>
+      <div class="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse  w-44">
+      </div>
+      <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-sticky">
+        <div class="relative inline-block text-left group">
+          <button class="inline-flex justify-center w-full px-4 py-1 text-xs text-white rounded-full bg-neutral-800 hover:bg-neutral-700 transition-all">
+            Models
+          </button>
+          <div class="absolute hidden group-hover:block w-56">
+            <div class="bg-transparent pt-2">
+              <div class="rounded-md shadow-lg bg-neutral-800 ring-1 ring-black ring-opacity-5 text-xs text-gray-50">
+                <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                  <a href="https://huggingface.co/Orenguteng/Llama-3.1-8B-Lexi-Uncensored-V2" class="block px-4 py-2 hover:bg-neutral-700 hover:text-gray-50" target="_blank" role="menuitem">
+                    <span class="flex flex-row gap-1.5">
+                      <span>DSN-1: Llama 3.1 8B</span>
+                      <span><img class="h-5 w-auto" src="./static/hf-logo.svg" alt="Hypertensor"></span>
+                    </span>        
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div> 
+      </div>
+    </div>
+  </nav>  
+  <div class="max-w-screen-lg mx-auto h-full flex-1 overflow-auto transition-width max-sm:px-2 pb-28 sm:px-3 md:px-12 lg:px-24">
+    <div class="composer-parent flex h-full flex-col focus-visible:outline-0">
+      <div class="flex-1 overflow-hidden">
+        <div class="h-full">
+          <div class="dialogue flex flex-col text-sm md:pb-24 mb-12">
+            <p class="ai-human">A chat between a curious human and an artificial intelligence assistant. The assistant gives helpful and short summaries to the user's questions.</p>
+            <p class="ai-replica flex flex-col gap-2"><span><img src="./static/logo.svg" width="16" height="16" class="invert"></span><span class="text ai-text">Assistant: Hi! How can I help you?</span>
+              <span class="flex flex-row gap-3">
+                <button type="button" id="speech-button" class="text-to-speech-button transition disabled:opacity-15 hover:bg-neutral-700 rounded-full p-1 text-center inline-flex items-center" value="Hi! How can I help you?">
+                  <img class="w-4 h-4 invert" src="./static/speech.svg">
+                </button>
+              </span>
+            </p>
+            <span class="mx-auto px-2.5 py-1 text-white text-xs rounded-full bg-zinc-800 text-center mb-3">
+              <span class="flex flex-row gap-2">
+                <span>The first request may be slow</span>
+                <span>😊</span>
+              </span>
+            </span>
+          </div>      
+        </div>
+      </div>
+    </div>
+    <div class="md:pt-0 dark:border-white/20 md:border-transparent md:dark:border-transparent w-full">
+      <div>
+        <div class="m-auto text-base px-3 md:px-4 w-full md:px-5 lg:px-4 xl:px-5">
+          <div class="mx-auto flex flex-1 gap-4 text-base md:gap-5 lg:gap-6 md:max-w-3xl lg:max-w-[40rem] xl:max-w-[48rem]">
+            <div class="flex justify-center"></div>
+            <div class="chat-section max-w-screen-lg mx-auto fixed inset-x-0 bottom-0 py-2.5 max-sm:px-2 sm:px-3 md:px-12 lg:px-24"> 
+              <div class="human-replica flex items-center pr-3 py-2 gap-3">
+                <textarea rows="2" placeholder="Message GPT" class="disabled:text-neutral-500 block w-full resize-none rounded-2xl bg-zinc-800 px-3 py-1.5 text-zinc-50 outline outline-0 out line-gray-300 placeholder:text-gray-400 focus:outline focus:outline-0 focus:-outline-offset-2 sm:text-sm/6"></textarea>
+                <button type="submit" id="human-replica-submit" class="items-center disabled:bg-neutral-500 disabled:hover:bg-zinc-500 disabled:cursor-default inline-flex justify-center p-0 text-gray-950 rounded-full cursor-pointer bg-zinc-50 hover:bg-zinc-300">
+                  <svg width="23" height="23" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-2xl"><path fill-rule="evenodd" clip-rule="evenodd" d="M15.1918 8.90615C15.6381 8.45983 16.3618 8.45983 16.8081 8.90615L21.9509 14.049C22.3972 14.4953 22.3972 15.2189 21.9509 15.6652C21.5046 16.1116 20.781 16.1116 20.3347 15.6652L17.1428 12.4734V22.2857C17.1428 22.9169 16.6311 23.4286 15.9999 23.4286C15.3688 23.4286 14.8571 22.9169 14.8571 22.2857V12.4734L11.6652 15.6652C11.2189 16.1116 10.4953 16.1116 10.049 15.6652C9.60265 15.2189 9.60265 14.4953 10.049 14.049L15.1918 8.90615Z" fill="currentColor"></path></svg>
+                </button>
+                <button id="audio-start" class="items-center w-[23px] h-[23px] min-w-[23px] min-h-[23px] rounded-full disabled:bg-neutral-500 disabled:hover:bg-zinc-500 disabled:cursor-default inline-flex justify-center p-0 text-gray-950 rounded-full cursor-pointer bg-zinc-50 hover:bg-zinc-300 items-center">
+                  <img class="h-5 w-auto" src="./static/audio-waves.svg" id="audio-start-img">
+                </button>
+              </div>
+            </div>              
+          </div>
+        </div>  
+      </div>
+    </div>
+    <div class="relative z-10 hidden" id="modal-deai-message" aria-labelledby="modal-deai-message" role="dialog" aria-modal="true">
+      <div class="fixed inset-0" aria-hidden="true"></div>
+      <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+          <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+            <div class="bg-white pt-3 pb-4 px-4 mb-4 sm:p-6 sm:pb-4">
+              <div class="flex items-center justify-between rounded-t dark:border-gray-600">
+                <button type="button" id="modal-deai-close" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="small-modal">
+                  <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                  </svg>
+                  <span class="sr-only">Close modal</span>
+                </button>
+              </div>
+              <div class="sm:flex sm:items-start">
+                <div class="sm:ml-4 sm:mt-0 sm:text-left">
+                  <div class="mt-2 flex flex-col gap-2 text-sm">
+                    <div>
+                      This is a decentralized AI model running an uncensored version of 
+                      <a 
+                      class="text-blue-700 hover:text-blue-400 transition-all"
+                      href="https://huggingface.co/Orenguteng/Llama-3.1-8B-Lexi-Uncensored-V2" 
+                      target="_blank"
+                      >Llama-3-8B</a> on the Hypertensor Testnet.
+                    </div>
+                    <div>
+                      This model is based on Llama-3.1-8b-Instruct, and is governed by 
+                      <a href="https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/LICENSE">META LLAMA 3.1 COMMUNITY LICENSE AGREEMENT</a>
+                    </div>
+                    <div>
+                      Each transformer block of the model is distributed and hosted globally around the world, within a Hypertensor Subnet, making it fault tolerant.
+                    </div>
+                    <div class="text-sm mt-2">
+                      🐞 Expect bugs! 
+                    </div>
+                    <div class="mt-2 flex flex-col gap-1 text-sm">
+                      <div class="font-medium">
+                        Why decentralized AI?
+                      </div>
+                      <div>
+                        AI is on a similar path that finance and media took, where control, culture, and truth is controlled by a 
+                        few companies and cabals.
+                      </div>
+                    </div>
+                    <div class="mt-2 flex flex-col gap-1 text-sm">
+                      <div class="font-medium">
+                        Why Hypertensor?
+                      </div>
+                      <div>
+                        Decentralization at scale doesn't exist without incentives. 
+                      </div>
+                      <div>
+                        Hypertensor is building a decentralized & incentivized AI platform for decentralized AI models and decentralized AI applications.
+                      </div>
+                      <div>
+                        The model you're using right now is just one subnet of thousands that will be on Hypertensor one day.
+                        You or any one else can deploy a decentralized AI model as a subnet using our 
+                        <a 
+                          class="text-blue-700 hover:text-blue-400 transition-all"
+                          href="https://www.github.com/hypertensor-blockchain/subnet-llm-template" 
+                          target="_blank"
+                        >Decentralized LLM Standard</a>.
+                      </div>
+                    </div>
+                    <div class="mt-2 flex flex-col gap-1 text-sm">
+                      <div class="font-medium">
+                        Run a validator node
+                      </div>
+                      <div>
+                        Contribute to the decentralization of AI by 
+                        <a 
+                        class="text-blue-700 hover:text-blue-400 transition-all"
+                        href="https://docs.hypertensor.org" 
+                        target="_blank"
+                        >running a validator node</a>.
+                      </div>
+                    </div>
+                    <div class="mt-2 flex flex-col gap-1 text-sm">
+                      <div class="font-medium">
+                        Build your own subnet
+                      </div>
+                      <div>
+                        Developers can 
+                        <a 
+                          class="text-blue-700 hover:text-blue-400 transition-all"
+                          href="https://docs.hypertensor.org" 
+                          target="_blank"
+                        >build a subnet</a>,
+                        or deploy one using our 
+                        <a 
+                          class="text-blue-700 hover:text-blue-400 transition-all"
+                          href="https://www.github.com/hypertensor-blockchain/subnet-llm-template" 
+                          target="_blank"
+                        >Decentralized LLM Standard</a>.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="relative z-10 error-box" style="display: none;" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+      <div class="fixed inset-0" aria-hidden="true"></div>
+      <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+          <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+            <div class="bg-white p-4 pb-4 sm:p-6 sm:pb-4">
+              <div class="sm:flex sm:items-start">
+                <div class="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:size-10">
+                  <svg class="size-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                  </svg>
+                </div>
+                <div class="sm:ml-4 sm:mt-0 sm:text-left">
+                  <h3 class="text-base mt-1.5 font-semibold text-gray-900" id="modal-title">Error</h3>
+                  <div class="mt-2 flex flex-col gap-2 text-sm">
+                    <span class="flex flex-col gap-2">
+                      <span>
+                        You may have asked the model to perform a long task, click the <span class="text-bol">Continue & Retry</span> button
+                        to increase the session length:  
+                      </span>
+                      <a class="retry-link w-32 btn text-xs py-[1.5px] bg-slate-500 text-slate-50 hover:text-white hover:bg-slate-400" href="#">
+                        Continue & Retry
+                      </a>
+                    </span>
+                    <span class="out-of-capacity">
+                      Or <b>we're out of capacity</b> &mdash; attention caches of existing servers are full.
+                      Please come back later, or
+                      <a target="_blank" href="https://docs.hypertensor.org">connect your GPU</a>
+                      to increase the Subnets capacity now!  
+                    </span>
+                    <span>
+                      Or <b>try restarting your browser!</b>
+                    </span>
+                    <span class="error-message"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="relative z-10 hidden" id="audio-visualizer" aria-labelledby="audio-visualizer" role="dialog" aria-modal="true">
+      <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+        <div class="flex flex-col min-h-full items-center justify-center p-4 sm:items-center ">
+          <div class="text-neutral-50 text-xs mb-[8.4rem] text-animate-gradient">I'm listening</div>
+          <div class="absolute transform overflow-hidden rounded-full bg-black shadow-xl shadow-black gradient-border bg-blend-luminosity">
+            <div class="">
+              <div class="flex justify-center items-center">
+                <div class="">
+                  <div id="push-to-stop"  class="absolute hover:bg-zinc-100/5 active:bg-zinc-200/10 text-xs text-zinc-500  flex items-cener justify-center hover:text-zinc-300 transition hover:cursor-pointer active:text-white h-[98px] w-[98px]">
+                    <div class="my-auto opacity-30">Push to stop</div>
+                  </div>
+                  <canvas id="visualizer" width="98" height="98"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <span id="ready" class="ready" hidden="true"></span>
+  </div>
+</main> -->
+<main>
+  <nav class="bg-zinc-900 sticky w-full z-20 top-0 start-0 py-1.5">
+    <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-1.5">
+      <a href="https://hypertensor.org/" class="flex items-center space-x-3 rtl:space-x-reverse w-44" target="_blank">
+        <img class="h-5 w-auto invert" src="./static/logo.svg" alt="Hypertensor Logo">
+      </a>
+      <div class="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse  w-44">
+      </div>
+      <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-sticky">
+        <div class="relative inline-block text-left group">
+          <button class="inline-flex justify-center w-full px-4 py-1 text-xs text-white rounded-full bg-neutral-800 hover:bg-neutral-700 transition-all">
+            Models
+          </button>
+          <div class="absolute hidden group-hover:block w-56">
+            <div class="bg-transparent pt-2">
+              <div class="rounded-md shadow-lg bg-neutral-800 ring-1 ring-black ring-opacity-5 text-xs text-gray-50">
+                <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                  <a href="https://huggingface.co/Orenguteng/Llama-3.1-8B-Lexi-Uncensored-V2" class="block px-4 py-2 hover:bg-neutral-700 hover:text-gray-50" target="_blank" role="menuitem">
+                    <span class="flex flex-row gap-1.5">
+                      <span>DSN-1: Llama 3.1 8B</span>
+                      <span><img class="h-5 w-auto" src="./static/hf-logo.svg" alt="Hypertensor"></span>
+                    </span>        
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div> 
+      </div>
+    </div>
+  </nav>
+  <div class="lg:grid lg:grid-cols-5 h-[calc(100vh-50px)]">
+    <div class="hidden lg:block lg:col-span-1">
+    </div>
+    <div class="lg:col-span-3 px-2 flex flex-col">
+      <div class="h-[calc(100vh-50px)] flex flex-col">
+        <div id="chat-area" class="dialogue text-sm flex-1 overflow-y-auto p-4 space-y-4">
+          <div class="flex justify-end">
+            <div class="ai-human rounded-lg p-3 max-w-xs">
+              A chat between a curious human and an artificial intelligence assistant. The assistant gives helpful and short summaries to the user's questions.
+            </div>
+          </div>
+          <div class="flex justify-start">
+            <div class="ai-replica rounded-lg p-3 max-w-xs flex flex-col gap-2">
+              <span><img src="./static/logo.svg" width="16" height="16" class="invert"></span>
+              <span class="text ai-text">Assistant: Hi! How can I help you?</span>
+              <span class="flex flex-row gap-3">
+                <button type="button" id="speech-button" class="text-to-speech-button transition disabled:opacity-15 hover:bg-neutral-700 rounded-full p-1 text-center inline-flex items-center" value="Hi! How can I help you?">
+                  <img class="w-4 h-4 invert" src="./static/speech.svg">
+                </button>
+              </span>
+            </div>
+          </div>
+          <!-- More messages as needed -->
+        </div>
+
+        <!-- Chat Input Box -->
+        <div class="p-4">
+          <div class="chat-section">
+            <div class="human-replica flex items-center gap-3">
+              <textarea rows="2" placeholder="Message GPT" class="disabled:text-neutral-500 block w-full resize-none rounded-2xl bg-zinc-800 px-3 py-1.5 text-zinc-50 outline outline-0 out line-gray-300 placeholder:text-gray-400 focus:outline focus:outline-0 focus:-outline-offset-2 sm:text-sm/6"></textarea>
+              <button type="submit" id="human-replica-submit" class="items-center disabled:bg-neutral-500 disabled:hover:bg-zinc-500 disabled:cursor-default inline-flex justify-center p-0 text-gray-950 rounded-full cursor-pointer bg-zinc-50 hover:bg-zinc-300">
+                <svg width="23" height="23" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-2xl"><path fill-rule="evenodd" clip-rule="evenodd" d="M15.1918 8.90615C15.6381 8.45983 16.3618 8.45983 16.8081 8.90615L21.9509 14.049C22.3972 14.4953 22.3972 15.2189 21.9509 15.6652C21.5046 16.1116 20.781 16.1116 20.3347 15.6652L17.1428 12.4734V22.2857C17.1428 22.9169 16.6311 23.4286 15.9999 23.4286C15.3688 23.4286 14.8571 22.9169 14.8571 22.2857V12.4734L11.6652 15.6652C11.2189 16.1116 10.4953 16.1116 10.049 15.6652C9.60265 15.2189 9.60265 14.4953 10.049 14.049L15.1918 8.90615Z" fill="currentColor"></path></svg>
+              </button>
+              <button id="audio-start" class="items-center w-[23px] h-[23px] min-w-[23px] min-h-[23px] rounded-full disabled:bg-neutral-500 disabled:hover:bg-zinc-500 disabled:cursor-default inline-flex justify-center p-0 text-gray-950 rounded-full cursor-pointer bg-zinc-50 hover:bg-zinc-300 items-center">
+                <img class="h-5 w-auto" src="./static/audio-waves.svg" id="audio-start-img">
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hidden lg:block lg:col-span-1">
+    </div>
+  </div>
+  <div>
+    <div class="relative z-10 hidden" id="modal-deai-message" aria-labelledby="modal-deai-message" role="dialog" aria-modal="true">
+      <div class="fixed inset-0" aria-hidden="true"></div>
+      <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+          <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+            <div class="bg-white pt-3 pb-4 px-4 mb-4 sm:p-6 sm:pb-4">
+              <div class="flex items-center justify-between rounded-t dark:border-gray-600">
+                <button type="button" id="modal-deai-close" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="small-modal">
+                  <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                  </svg>
+                  <span class="sr-only">Close modal</span>
+                </button>
+              </div>
+              <div class="sm:flex sm:items-start">
+                <div class="sm:ml-4 sm:mt-0 sm:text-left">
+                  <div class="mt-2 flex flex-col gap-2 text-sm">
+                    <div>
+                      This is a decentralized AI model running an uncensored version of 
+                      <a 
+                      class="text-blue-700 hover:text-blue-400 transition-all"
+                      href="https://huggingface.co/Orenguteng/Llama-3.1-8B-Lexi-Uncensored-V2" 
+                      target="_blank"
+                      >Llama-3-8B</a> on the Hypertensor Testnet.
+                    </div>
+                    <div>
+                      This model is based on Llama-3.1-8b-Instruct, and is governed by 
+                      <a href="https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/LICENSE">META LLAMA 3.1 COMMUNITY LICENSE AGREEMENT</a>
+                    </div>
+                    <div>
+                      Each transformer block of the model is distributed and hosted globally around the world, within a Hypertensor Subnet, making it fault tolerant.
+                    </div>
+                    <div class="text-sm mt-2">
+                      🐞 Expect bugs! 
+                    </div>
+                    <div class="mt-2 flex flex-col gap-1 text-sm">
+                      <div class="font-medium">
+                        Why decentralized AI?
+                      </div>
+                      <div>
+                        AI is on a similar path that finance and media took, where control, culture, and truth is controlled by a 
+                        few companies and cabals.
+                      </div>
+                    </div>
+                    <div class="mt-2 flex flex-col gap-1 text-sm">
+                      <div class="font-medium">
+                        Why Hypertensor?
+                      </div>
+                      <div>
+                        Decentralization at scale doesn't exist without incentives. 
+                      </div>
+                      <div>
+                        Hypertensor is building a decentralized & incentivized AI platform for decentralized AI models and decentralized AI applications.
+                      </div>
+                      <div>
+                        The model you're using right now is just one subnet of thousands that will be on Hypertensor one day.
+                        You or any one else can deploy a decentralized AI model as a subnet using our 
+                        <a 
+                          class="text-blue-700 hover:text-blue-400 transition-all"
+                          href="https://www.github.com/hypertensor-blockchain/subnet-llm-template" 
+                          target="_blank"
+                        >Decentralized LLM Standard</a>.
+                      </div>
+                    </div>
+                    <div class="mt-2 flex flex-col gap-1 text-sm">
+                      <div class="font-medium">
+                        Run a validator node
+                      </div>
+                      <div>
+                        Contribute to the decentralization of AI by 
+                        <a 
+                        class="text-blue-700 hover:text-blue-400 transition-all"
+                        href="https://docs.hypertensor.org" 
+                        target="_blank"
+                        >running a validator node</a>.
+                      </div>
+                    </div>
+                    <div class="mt-2 flex flex-col gap-1 text-sm">
+                      <div class="font-medium">
+                        Build your own subnet
+                      </div>
+                      <div>
+                        Developers can 
+                        <a 
+                          class="text-blue-700 hover:text-blue-400 transition-all"
+                          href="https://docs.hypertensor.org" 
+                          target="_blank"
+                        >build a subnet</a>,
+                        or deploy one using our 
+                        <a 
+                          class="text-blue-700 hover:text-blue-400 transition-all"
+                          href="https://www.github.com/hypertensor-blockchain/subnet-llm-template" 
+                          target="_blank"
+                        >Decentralized LLM Standard</a>.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="relative z-10 error-box" style="display: none;" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+      <div class="fixed inset-0" aria-hidden="true"></div>
+      <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+          <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+            <div class="bg-white p-4 pb-4 sm:p-6 sm:pb-4">
+              <div class="sm:flex sm:items-start">
+                <div class="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:size-10">
+                  <svg class="size-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                  </svg>
+                </div>
+                <div class="sm:ml-4 sm:mt-0 sm:text-left">
+                  <h3 class="text-base mt-1.5 font-semibold text-gray-900" id="modal-title">Error</h3>
+                  <div class="mt-2 flex flex-col gap-2 text-sm">
+                    <span class="flex flex-col gap-2">
+                      <span>
+                        You may have asked the model to perform a long task, click the <span class="text-bol">Continue & Retry</span> button
+                        to increase the session length:  
+                      </span>
+                      <a class="retry-link w-32 btn text-xs py-[1.5px] bg-slate-500 text-slate-50 hover:text-white hover:bg-slate-400" href="#">
+                        Continue & Retry
+                      </a>
+                    </span>
+                    <span class="out-of-capacity">
+                      Or <b>we're out of capacity</b> &mdash; attention caches of existing servers are full.
+                      Please come back later, or
+                      <a target="_blank" href="https://docs.hypertensor.org">connect your GPU</a>
+                      to increase the Subnets capacity now!  
+                    </span>
+                    <span>
+                      Or <b>try restarting your browser!</b>
+                    </span>
+                    <span class="error-message"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="relative z-10 hidden" id="audio-visualizer" aria-labelledby="audio-visualizer" role="dialog" aria-modal="true">
+      <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+        <div class="flex flex-col min-h-full items-center justify-center p-4 sm:items-center ">
+          <div class="text-neutral-50 text-xs mb-[8.4rem] text-animate-gradient">I'm listening</div>
+          <div class="absolute transform overflow-hidden rounded-full bg-black shadow-xl shadow-black gradient-border bg-blend-luminosity">
+            <div class="">
+              <div class="flex justify-center items-center">
+                <div class="">
+                  <div id="push-to-stop"  class="absolute hover:bg-zinc-100/5 active:bg-zinc-200/10 text-xs text-zinc-500  flex items-cener justify-center hover:text-zinc-300 transition hover:cursor-pointer active:text-white h-[98px] w-[98px]">
+                    <div class="my-auto opacity-30">Push to stop</div>
+                  </div>
+                  <canvas id="visualizer" width="98" height="98"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <span id="ready" class="ready" hidden="true"></span>
+  </div>
+</main>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
+    <script src="./static/autosize.min.js"></script>
+
+    <script>
+      const modelConfigs = {{ model_config_json|safe }};
+      const defaultModel = {{ default_model.backend.key|tojson|safe }};
+    </script>
+    <script src="./static/chat-test.js?v=18"></script>
+  </body>
+</html>

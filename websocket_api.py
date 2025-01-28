@@ -25,6 +25,8 @@ def ws_api_generate(ws):
         if not backend_config.public_api and http_request.origin != f"{http_request.scheme}://{http_request.host}":
             raise ValueError(f"We do not provide public API for {model_name} due to license restrictions")
 
+        server_sessions_data = []
+        
         with model.inference_session(max_length=max_length) as session:
             ws.send(json.dumps({"ok": True}))
 
@@ -71,6 +73,27 @@ def ws_api_generate(ws):
                     stop = stop_sequence is None or (
                         "falcon-180B" not in model_name and combined.endswith(stop_sequence)
                     )
+                    try:
+                        for server_session in session._server_sessions:
+                            dict = server_session.__dict__
+                            span = dict["span"]
+                            server_sessions_data.append({
+                                "peer_id": span.peer_id.to_base58(),
+                                "start_block": span.start,
+                                "end_block": span.end,
+                                "public_name": span.server_info.public_name,
+                                "network_rps": span.server_info.network_rps,
+                                "forward_rps": span.server_info.forward_rps,
+                                "inference_rps": span.server_info.inference_rps,
+                                "quant_type": span.server_info.quant_type,
+                                "using_relay": span.server_info.using_relay,
+                                "cache_tokens_left": span.server_info.cache_tokens_left,
+                                "cache_tokens_available": dict["rpc_info"]["cache_tokens_available"],
+                                "position": dict["_position"],
+                            })
+                    except:
+                        pass
+
                     if extra_stop_sequences is not None:
                         for seq in extra_stop_sequences:
                             if combined.endswith(seq):
@@ -85,8 +108,10 @@ def ws_api_generate(ws):
                         all_outputs = combined
                         token_count = len(delta_q + delta)
                         delta_q = []
+
                         logger.info(f"ws.generate.step(), all_outputs={repr(all_outputs)}, stop={stop}")
-                        ws.send(json.dumps({"ok": True, "outputs": outputs, "stop": stop, "token_count": token_count}))
+                        # ws.send(json.dumps({"ok": True, "outputs": outputs, "stop": stop, "token_count": token_count}))
+                        ws.send(json.dumps({"ok": True, "outputs": outputs, "stop": stop, "token_count": token_count, "server_sessions": server_sessions_data}))
     except flask_sock.ConnectionClosed:
         pass
     except Exception:

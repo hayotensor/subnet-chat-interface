@@ -13,7 +13,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
 
   </head>
-  <body class="bg-zinc-900">
+  <body class="bg-zinc-900 h-screen">
 
 <main>
   <nav class="bg-zinc-900 sticky w-full z-20 top-0 start-0 py-1.5">
@@ -22,12 +22,6 @@
         <img class="h-5 w-auto invert" src="./static/logo.svg" alt="Hypertensor Logo">
       </a>
       <div class="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse  w-44">
-        <!-- <a href="https://huggingface.co/Orenguteng/Llama-3.1-8B-Lexi-Uncensored-V2" target="_blank" >
-          <span class="flex items-center gap-1.5 border-1 border-neutral-50 text-neutral-100 hover:bg-neutral-700 text-xs font-medium px-3 py-1 rounded-lg">
-            <span>Run Validator Node</span>
-            <span><img class="h-4 w-auto invert" src="./static/new-window-logo.svg" alt="New Window"></span>
-          </span>  
-        </a> -->
       </div>
       <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-sticky">
         <div class="relative inline-block text-left group">
@@ -51,52 +45,57 @@
         </div> 
       </div>
     </div>
-  </nav>  
-  <div class="max-w-screen-lg mx-auto h-full flex-1 overflow-auto transition-width max-sm:px-2 pb-28 sm:px-3 md:px-12 lg:px-24">
-    <div class="composer-parent flex h-full flex-col focus-visible:outline-0">
-      <div class="flex-1 overflow-hidden">
-        <div class="h-full">
-          <div class="dialogue flex flex-col text-sm md:pb-24 mb-12">
-            <!-- <p class="ai-human">A chat between a curious human and an artificial intelligence assistant. The assistant gives helpful responses, provides concise answers, and brief explanations in the fewest words possible to the user's questions.</p> -->
-            <p class="ai-human">A chat between a curious human and an artificial intelligence assistant. The assistant gives helpful and short summaries to the user's questions.</p>
-            <!-- <p class="ai-replica flex flex-col gap-2"><span class="w-6 h-6 rounded-full shadow-[0_0_6px_0px_rgba(255,255,255,.4)] flex justify-center"><img src="./static/logo.svg" width="16" height="16" class="invert"></span><span class="text">Assistant: Hi! How can I help you?</span></p> -->
-            <p class="ai-replica flex flex-col gap-2"><span><img src="./static/logo.svg" width="16" height="16" class="invert"></span><span class="text ai-text">Assistant: Hi! How can I help you?</span>
-              <span class="flex flex-row gap-3">
+  </nav>
+  <div class="lg:grid lg:grid-cols-5 h-[calc(100vh-50px)]">
+    <div class="hidden lg:block lg:col-span-1">
+    </div>
+    <div class="lg:col-span-3 px-2 flex flex-col">
+      <div class="h-[calc(100vh-50px)] flex flex-col">
+        <div id="chat-area" class="dialogue text-sm flex-1 overflow-y-auto space-y-4 lg:px-2 pt-2">
+          <div class="flex justify-end">
+            <div class="ai-human max-w-xs sm:max-w-sm md:max-w-md">
+              A chat between a curious human and an artificial intelligence assistant. The assistant gives helpful and short summaries to the user's questions.
+            </div>
+          </div>
+          <div class="flex justify-start">
+            <div class="ai-replica max-w-xs sm:max-w-sm md:max-w-md flex flex-col gap-2">
+              <span><img src="./static/logo.svg" width="16" height="16" class="invert"></span>
+              <span class="text ai-text">Assistant: Hi! How can I help you?</span>
+              <span class="flex flex-row gap-2 items-center">
                 <button type="button" id="speech-button" class="text-to-speech-button transition disabled:opacity-15 hover:bg-neutral-700 rounded-full p-1 text-center inline-flex items-center" value="Hi! How can I help you?">
                   <img class="w-4 h-4 invert" src="./static/speech.svg">
                 </button>
+                <span class="session-data flex flex-row gap-3 items-center">
+                  <span class="inline-flex items-center rounded-sm bg-blue-400/10 px-2 py-1 text-xs font-medium text-blue-400 ring-1 ring-inset ring-blue-400/30">
+                    System
+                  </span>
+                </span>  
               </span>
-            </p>
-            <span class="mx-auto px-2.5 py-1 text-white text-xs rounded-full bg-zinc-800 text-center mb-3">
-              <span class="flex flex-row gap-2">
-                <span>The first request may be slow</span>
-                <span>😊</span>
-              </span>
-            </span>
-          </div>      
+            </div>
+          </div>
+          <!-- More messages as needed -->
+        </div>
+
+        <!-- Chat Input Box -->
+        <div class="max-sm:p-2 sm:p-2 md:p-4">
+          <div class="chat-section">
+            <div class="human-replica flex items-center gap-3">
+              <textarea rows="2" placeholder="Message GPT" class="disabled:text-neutral-500 block w-full resize-none rounded-2xl bg-zinc-800 px-3 py-1.5 text-zinc-50 outline outline-0 out line-gray-300 placeholder:text-gray-400 focus:outline focus:outline-0 focus:-outline-offset-2 sm:text-sm/6"></textarea>
+              <button type="submit" id="human-replica-submit" class="items-center disabled:bg-neutral-500 disabled:hover:bg-zinc-500 disabled:cursor-default inline-flex justify-center p-0 text-gray-950 rounded-full cursor-pointer bg-zinc-50 hover:bg-zinc-300">
+                <svg width="23" height="23" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-2xl"><path fill-rule="evenodd" clip-rule="evenodd" d="M15.1918 8.90615C15.6381 8.45983 16.3618 8.45983 16.8081 8.90615L21.9509 14.049C22.3972 14.4953 22.3972 15.2189 21.9509 15.6652C21.5046 16.1116 20.781 16.1116 20.3347 15.6652L17.1428 12.4734V22.2857C17.1428 22.9169 16.6311 23.4286 15.9999 23.4286C15.3688 23.4286 14.8571 22.9169 14.8571 22.2857V12.4734L11.6652 15.6652C11.2189 16.1116 10.4953 16.1116 10.049 15.6652C9.60265 15.2189 9.60265 14.4953 10.049 14.049L15.1918 8.90615Z" fill="currentColor"></path></svg>
+              </button>
+              <button id="audio-start" class="items-center w-[23px] h-[23px] min-w-[23px] min-h-[23px] rounded-full disabled:bg-neutral-500 disabled:hover:bg-zinc-500 disabled:cursor-default inline-flex justify-center p-0 text-gray-950 rounded-full cursor-pointer bg-zinc-50 hover:bg-zinc-300 items-center">
+                <img class="h-5 w-auto" src="./static/audio-waves.svg" id="audio-start-img">
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-    <div class="md:pt-0 dark:border-white/20 md:border-transparent md:dark:border-transparent w-full">
-      <div>
-        <div class="m-auto text-base px-3 md:px-4 w-full md:px-5 lg:px-4 xl:px-5">
-          <div class="mx-auto flex flex-1 gap-4 text-base md:gap-5 lg:gap-6 md:max-w-3xl lg:max-w-[40rem] xl:max-w-[48rem]">
-            <div class="flex justify-center"></div>
-            <div class="chat-section max-w-screen-lg mx-auto fixed inset-x-0 bottom-0 py-2.5 max-sm:px-2 sm:px-3 md:px-12 lg:px-24"> 
-              <div class="human-replica flex items-center pr-3 py-2 gap-3">
-                <textarea rows="2" placeholder="Message GPT" class="disabled:text-neutral-500 block w-full resize-none rounded-2xl bg-zinc-800 px-3 py-1.5 text-zinc-50 outline outline-0 out line-gray-300 placeholder:text-gray-400 focus:outline focus:outline-0 focus:-outline-offset-2 sm:text-sm/6"></textarea>
-                <button type="submit" id="human-replica-submit" class="items-center disabled:bg-neutral-500 disabled:hover:bg-zinc-500 disabled:cursor-default inline-flex justify-center p-0 text-gray-950 rounded-full cursor-pointer bg-zinc-50 hover:bg-zinc-300">
-                  <svg width="23" height="23" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-2xl"><path fill-rule="evenodd" clip-rule="evenodd" d="M15.1918 8.90615C15.6381 8.45983 16.3618 8.45983 16.8081 8.90615L21.9509 14.049C22.3972 14.4953 22.3972 15.2189 21.9509 15.6652C21.5046 16.1116 20.781 16.1116 20.3347 15.6652L17.1428 12.4734V22.2857C17.1428 22.9169 16.6311 23.4286 15.9999 23.4286C15.3688 23.4286 14.8571 22.9169 14.8571 22.2857V12.4734L11.6652 15.6652C11.2189 16.1116 10.4953 16.1116 10.049 15.6652C9.60265 15.2189 9.60265 14.4953 10.049 14.049L15.1918 8.90615Z" fill="currentColor"></path></svg>
-                </button>
-                <button id="audio-start" class="items-center w-[23px] h-[23px] min-w-[23px] min-h-[23px] rounded-full disabled:bg-neutral-500 disabled:hover:bg-zinc-500 disabled:cursor-default inline-flex justify-center p-0 text-gray-950 rounded-full cursor-pointer bg-zinc-50 hover:bg-zinc-300 items-center">
-                  <img class="h-5 w-auto" src="./static/audio-waves.svg" id="audio-start-img">
-                </button>
-              </div>
-            </div>              
-          </div>
-        </div>  
-      </div>
+    <div class="hidden lg:block lg:col-span-1">
     </div>
+  </div>
+  <div>
     <div class="relative z-10 hidden" id="modal-deai-message" aria-labelledby="modal-deai-message" role="dialog" aria-modal="true">
       <div class="fixed inset-0" aria-hidden="true"></div>
       <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
@@ -259,30 +258,9 @@
               </div>
             </div>
           </div>
-          <!-- <div class="pt-32">
-            <button type="button" class="shadow-xl  shadow-black text-white bg-zinc-700 hover:bg-neutral-600 font-medium rounded-full text-xs px-4 py-1 focus:outline-none active:bg-zinc-500">
-              Cancel
-            </button>
-          </div> -->
         </div>
       </div>
     </div>
-    <!-- <div class="relative z-10 hidden" id="audio-visualizer" aria-labelledby="audio-visualizer" role="dialog" aria-modal="true">
-      <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
-        <div class="flex min-h-full items-center justify-center p-4 sm:items-center ">
-          <div class="text-neutral-50 fixed bottom-0 mb-[13.8rem] md:mb-[12.4rem] text-xs">I'm listening</div>
-          <div class="absolute transform overflow-hidden rounded-full bg-black shadow-xl shadow-black fixed bottom-0 mb-[7rem] md:mb-[5.6rem]">
-            <div class="">
-              <div class="flex justify-center items-center">
-                <div class="">
-                  <canvas id="visualizer" width="98" height="98"></canvas>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div> -->
     <span id="ready" class="ready" hidden="true"></span>
   </div>
 </main>
@@ -294,16 +272,5 @@
       const defaultModel = {{ default_model.backend.key|tojson|safe }};
     </script>
     <script src="./static/chat-test.js?v=18"></script>
-    <!-- <script type="module" src="./static/chat-test.js?v=18"></script> -->
-    <!-- <script src="./static/hypertensor-tuning.js"></script> -->
   </body>
 </html>
-
-<!-- <button id="audioButton" class="audio-btn hover:bg-neutral-700" value="Hi! How can I help you?">
-  <span id="playIcon" class="audio-icon">
-    <img class="w-4 h-4 invert" src="./static/speech.svg"></img>
-  </span>
-  <span id="stopIcon" class="audio-icon hidden">
-    <img class="w-4 h-4 invert" src="./static/audio-silent.svg"></img>
-  </span>
-</button> -->

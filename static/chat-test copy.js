@@ -70,8 +70,7 @@ var hypertensorTuningAdded = false;
 
 var ws = null;
 var position = 0;
-var lastPeerPosition = 0;
-var sessionPeersData = null;
+var testPosition = 0;
 const initialSessionLength = 1024;
 var sessionLength = initialSessionLength;
 var connFailureBefore = false;
@@ -109,8 +108,6 @@ function resetSession() {
   }
   ws = null;
   position = 0;
-  lastPeerPosition = 0;
-  sessionPeersData = null;
 }
 
 function isWaitingForInputs() {
@@ -123,9 +120,13 @@ function sendReplica() {
     const aiPrompt = "Assistant:";
     $("#ready").attr('class', '');
 
+    // $('.dialogue').append($(
+    //   `<p class="ai-human">Human: ${$('.human-replica:last textarea').val()}</p>`
+    // ))
+
     $('.dialogue').append($(
       `<div class="flex justify-end">` +
-        `<div class="ai-human max-w-xs sm:max-w-sm md:max-w-md">` +
+        `<div class="ai-human rounded-lg p-3 max-w-xs">` +
           `Human: ${$('.human-replica:last textarea').val()}` +
         `</div>` +
       `</div>`
@@ -135,9 +136,23 @@ function sendReplica() {
     $("#human-replica-submit").prop("disabled", true);
     $("#audio-start").prop("disabled", true);
 
+    // $('.dialogue').append($(
+    //   '<p class="ai-replica flex flex-col gap-2 scroll-smooth scroll-auto">' +
+    //     `<span><img src="./static/logo.svg" width="16" height="16" class="invert"></span>` +
+    //     `<span class="text ai-text whitespace-pre-line">${aiPrompt}</span>` +
+    //     '<span class="loader"></span>' +
+    //     '<span class="speed" style="display: none;"></span>' +
+    //     '<span class="generation-controls"><a class="stop-generation" href=#>stop generation</a></span>' +
+    //     '<span class="suggest-join" style="display: none;">' +
+    //       '<b>Too slow?</b> ' +
+    //       '<a target="_blank" href="https://github.com/hypertensor-blockchain/subnet-llm-template">Connect your GPU</a> ' +
+    //       'and increase the Subnets capacity!' +
+    //     '</span>' +
+    //   '</p>'));
+
     $('.dialogue').append($(
       `<div class="flex justify-start scroll-smooth scroll-auto">` +
-        `<div class="ai-replica max-w-xs sm:max-w-sm md:max-w-md flex">` +
+        `<div class="ai-replica rounded-lg p-3 max-w-xs flex">` +
           `<span><img src="./static/logo.svg" width="16" height="16" class="invert"></span>` +
           `<span class="text ai-text whitespace-pre-line">${aiPrompt}</span>` +
           '<span class="loader"></span>' +
@@ -151,6 +166,11 @@ function sendReplica() {
         `</div>` +
       `</div>`
     ));
+
+    // $('body, html').animate({ scrollTop: $(".ai-replica:last").offset().top }, 1000);
+    // $('.dialogue').animate({ scrollTop: $(".ai-replica:last").offset().top }, 1000);
+    // $(".dialogue").animate({ scrollTop: $(".ai-replica:last").height()-$(window).height()}, 200);
+    // $(".dialogue").animate({ scrollTop: $(".ai-replica:last").scrollTop() }, 1000);
 
     scrollToBottom();
 
@@ -238,7 +258,6 @@ function receiveReplica(inputs) {
   }));
 
   var lastMessageTime = null;
-  let peers = null;
   ws.onmessage = event => {
     connFailureBefore = false;  // We've managed to connect after a possible failure
 
@@ -250,16 +269,7 @@ function receiveReplica(inputs) {
       return;
     }
 
-    if ("server_sessions" in response) {
-      if (response.server_sessions.length != undefined && response.server_sessions.length > 0) {
-        lastPeerPosition = response.server_sessions.length;
-        if (sessionPeersData == null) {
-          sessionPeersData = response.server_sessions;
-        } else {
-          sessionPeersData = [...new Set([...sessionPeersData.map(JSON.stringify), ...response.server_sessions.map(JSON.stringify)])].map(JSON.parse);
-        }  
-      }
-    }
+    console.log("response", response)
 
     if (lastMessageTime != null) {
       totalElapsed += performance.now() - lastMessageTime;
@@ -285,8 +295,8 @@ function receiveReplica(inputs) {
     }
 
     lastReplica.text(newText);
+    // $('.dialogue').animate({ scrollTop: $(".ai-replica:last").offset().top }, 500);
 
-    
     if (!response.stop && !forceStop) {
       if (tokenCount >= 1) {
         const speed = tokenCount / (totalElapsed / 1000);
@@ -297,6 +307,8 @@ function receiveReplica(inputs) {
           $('.suggest-join').show();
         }
       }
+    // } else if (response.server_sessions_data) {
+    //   console.log("response.server_sessions_data", response.server_sessions_data)
     } else {
       if (forceStop) {
         resetSession();
@@ -314,38 +326,8 @@ function receiveReplica(inputs) {
           `<button type="button" class="text-to-speech-button transition disabled:opacity-15 hover:bg-neutral-700 rounded-full p-1 text-center inline-flex items-center" value="${newText}" >` +
             `<img class="w-4 h-4 invert" src="./static/speech.svg">` +
           `</button>` +
-          `<span class="session-data flex flex-row gap-2">` + 
-          `</span>` +
         `</span>`
       );    
-
-      let sessionDataDiv = $('.session-data:last'); // The div where you want to append the elements
-
-      let uniquePeerIds = Array.from(new Set(sessionPeersData.map(item => item.peer_id)));
-      uniquePeerIds.forEach(peerId => {
-        // Create the HTML element for each peerId
-        let peerElement = 
-          `<span class="inline-flex items-center rounded-sm bg-blue-400/10 px-2 py-1 text-xs font-medium text-blue-400 ring-1 ring-inset ring-blue-400/30 fade-left-to-right">` +
-            `${"..." + peerId.slice(-5)}` +
-          `</span>`
-        ;
-      
-        // Append the element to the parent div
-        sessionDataDiv.append(peerElement);
-      });
-      
-      // $(".ai-replica:last").append(
-      //   `<span class="flex flex-row gap-3">` +
-      //     `<button type="button" class="text-to-speech-button transition disabled:opacity-15 hover:bg-neutral-700 rounded-full p-1 text-center inline-flex items-center" value="${newText}" >` +
-      //       `<img class="w-4 h-4 invert" src="./static/speech.svg">` +
-      //     `</button>` +
-      //     `<span class="session-data flex flex-row gap-2">` + 
-      //       `<span class="inline-flex items-center rounded-sm bg-blue-400/10 px-2 py-1 text-xs font-medium text-blue-400 ring-1 ring-inset ring-blue-400/30">` +
-      //         `System` +
-      //       `</span>` +
-      //     `</span>` +
-      //   `</span>`
-      // );
       appendTextArea();
     }
   };
@@ -506,7 +488,9 @@ function visualize(analyser) {
     g = 255
 
     for (let i = 0; i < bufferLength; i++) {
+      // b = Math.random() * (255 - 0) + 0; // was 0
       barHeight = dataArray[i];
+      // canvasContext.fillStyle = `rgb(${255-barHeight},${g},${0})`;
       canvasContext.fillStyle = `rgb(${barHeight},${g},0)`;
       canvasContext.fillRect(x, canvas.height - barHeight / 5, barWidth, barHeight / 5);
       x += barWidth + 1;
@@ -552,10 +536,25 @@ function renderOutput(responseText) {
 }
 
 function appendTextArea() {
+  // $('body, html').animate({ scrollTop: $(".ai-replica:last").offset().top }, 1000);
+  // $('.dialogue').animate({ scrollTop: $(".ai-replica:last").offset().top }, 500);
+  // $(".dialogue").animate({ scrollTop: $(".ai-replica:last").height()-$(window).height()}, 200);
+  // $('.dialogue').animate({ scrollTop: $(".ai-replica:last").offset().top }, 1000);
   scrollToBottom();
   $('.chat-section').empty();
   $('.human-replica:last').remove();
 
+  // $('.chat-section').append($(
+  //   `<div class="human-replica flex items-center pr-3 py-2 gap-3">` +
+  //   `<textarea rows="2" placeholder="Message GPT" class="disabled:text-neutral-500 block w-full resize-none rounded-2xl bg-zinc-800 px-3 py-1.5 text-zinc-50 outline outline-0 out line-gray-300 placeholder:text-gray-400 focus:outline focus:outline-0 focus:-outline-offset-2 sm:text-sm/6"></textarea>` +
+  //     `<button type="submit" id="human-replica-submit" class="items-center disabled:bg-neutral-500 disabled:hover:bg-zinc-500 disabled:cursor-default inline-flex justify-center p-0 text-gray-950 rounded-full cursor-pointer bg-zinc-50 hover:hover:bg-zinc-300">` +
+  //     `<svg width="23" height="23" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-2xl"><path fill-rule="evenodd" clip-rule="evenodd" d="M15.1918 8.90615C15.6381 8.45983 16.3618 8.45983 16.8081 8.90615L21.9509 14.049C22.3972 14.4953 22.3972 15.2189 21.9509 15.6652C21.5046 16.1116 20.781 16.1116 20.3347 15.6652L17.1428 12.4734V22.2857C17.1428 22.9169 16.6311 23.4286 15.9999 23.4286C15.3688 23.4286 14.8571 22.9169 14.8571 22.2857V12.4734L11.6652 15.6652C11.2189 16.1116 10.4953 16.1116 10.049 15.6652C9.60265 15.2189 9.60265 14.4953 10.049 14.049L15.1918 8.90615Z" fill="currentColor"></path></svg>` +
+  //   `</button>` +
+  //   `<button id="audio-start" class="items-center w-[23px] h-[23px] min-w-[23px] min-h-[23px] rounded-full disabled:bg-neutral-500 disabled:hover:bg-zinc-500 disabled:cursor-default inline-flex justify-center p-0 text-gray-950 rounded-full cursor-pointer bg-zinc-50 hover:bg-zinc-300 items-center">` +
+  //     `<img class="h-5 w-auto" src="./static/audio-waves.svg" id="audio-start-img">` +
+  //   `</button>` +
+  // `</div>`
+  // ))
   $('.chat-section').append($(
     `<div class="chat-section">` +
       `<div class="human-replica flex items-center gap-3">` +
@@ -594,6 +593,7 @@ function upgradeTextArea() {
 
   textarea.on('keypress', e => {
     if (e.which == 13 && !e.shiftKey) {
+      console.log("keypress", e.currentTarget.value);
       e.preventDefault();
       // don't submit unless there is an input value
       if (e.currentTarget.value.length == 0) {
